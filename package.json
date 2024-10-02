@@ -12,7 +12,8 @@
   "author": "Angel Juarez",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "mongoose": "^6.6.1"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
