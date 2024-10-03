@@ -24,4 +24,16 @@ const getItems = (req, res) => {
     });
 };
 
-module.exports = { createItem, getItems };
+const updateItem = (req, res) => {
+  const { itemId } = req.params;
+  const { imageUrl } = req.body;
+
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      res.status(500).send({ message: "Error from updateItem", e });
+    });
+};
+
+module.exports = { createItem, getItems, updateItem };
