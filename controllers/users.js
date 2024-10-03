@@ -33,8 +33,9 @@ const getUser = (req, res) => {
       console.error(err);
       if (err.name === "DoocumentNotFoundError") {
         //...
-      }
-      return res.status(500).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        //...
+      } else return res.status(500).send({ message: err.message });
     });
 };
 
