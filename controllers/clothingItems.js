@@ -1,3 +1,4 @@
+const { get } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 
 const createItem = (req, res) => {
@@ -15,4 +16,12 @@ const createItem = (req, res) => {
     });
 };
 
-module.exports = { createItem };
+const getItems = (req, res) => {
+  ClothingItem.find({})
+    .then((item) => res.status(200).send(item))
+    .catch((e) => {
+      res.status(500).send({ message: "Error from getItems", e });
+    });
+};
+
+module.exports = { createItem, getItems };
