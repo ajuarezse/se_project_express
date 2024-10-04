@@ -1,5 +1,10 @@
 //const { get } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
+const {
+  BAD_REQUEST_STATUS,
+  NOT_FOUND_STATUS,
+  INTERNAL_SERVER_ERROR_STATUS,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req.body);
@@ -12,7 +17,9 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      res.status(500).send({ message: "Error from createItem", e });
+      res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "Error from createItem", e });
     });
 };
 
