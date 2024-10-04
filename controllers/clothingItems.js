@@ -1,4 +1,4 @@
-const { get } = require("mongoose");
+//const { get } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 
 const createItem = (req, res) => {
