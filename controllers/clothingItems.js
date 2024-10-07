@@ -1,4 +1,5 @@
 //const { get } = require("mongoose");
+const e = require("express");
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS,
@@ -53,8 +54,10 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then(() => ClothingItem.deleteOne({ _id: itemId }))
+    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
     .catch((e) => {
+      console.error("Error:", e);
       res.status(500).send({ message: "Error from deleteItem", e });
     });
 };
@@ -80,10 +83,32 @@ const likeItem = (req, res) => {
     });
 };
 
+const disLikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then(() => res.status(200).send({ message: e.message }))
+    .catch((e) => {
+      console.error("Error:", e);
+      if (e.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      } else if (e.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND_STATUS).send({ message: e.message });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: e.message });
+    });
+};
+
 module.exports = {
   createItem,
   getItems,
   updateItem,
   deleteItem,
   likeItem,
+  disLikeItem,
 };
