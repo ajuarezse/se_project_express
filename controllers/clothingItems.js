@@ -59,4 +59,29 @@ const deleteItem = (req, res) => {
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send(item))
+    .catch((e) => {
+      console.error(e);
+      if (e.name === "DocumentNotFoundError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: err.message });
+    });
+};
+
+module.exports = {
+  createItem,
+  getItems,
+  updateItem,
+  deleteItem,
+  likeItem,
+};

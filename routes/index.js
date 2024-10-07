@@ -1,11 +1,12 @@
 const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItem = require("./clothingItems");
+const { NOT_FOUND_STATUS } = require("../utils/errors");
 
 router.use("/users", userRouter);
 router.use("/items", clothingItem);
 router.use((req, res) => {
-  res.status(404).send({
+  res.status(NOT_FOUND_STATUS).send({
     message: "Requested resource not found",
   });
 });
