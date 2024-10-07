@@ -8,23 +8,21 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log(req.body);
-
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl })
     .then((item) => {
-      console.log(item);
       res.send({ data: item });
     })
     .catch((e) => {
       console.error(e);
       if (e.name === "ValidationError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_STATUS)
+          .send({ message: "Error from createItem", e });
       }
-      res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "Error from createItem", e });
     });
 };
 
@@ -32,6 +30,7 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((item) => res.status(200).send(item))
     .catch((e) => {
+      console.error(e);
       res.status(500).send({ message: "Error from getItems", e });
     });
 };
@@ -44,21 +43,33 @@ const updateItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(500).send({ message: "Error from updateItem", e });
+      console.error(e);
+      if (e.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      } else if (e.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+      } else {
+        res.status(500).send({ message: "Error from updateItem", e });
+      }
     });
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  console.log(itemId);
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then(() => ClothingItem.deleteOne({ _id: itemId }))
     .then(() => res.status(200).send({ message: "Item deleted successfully" }))
     .catch((e) => {
-      console.error("Error:", e);
-      res.status(500).send({ message: "Error from deleteItem", e });
+      console.error(e);
+      if (e.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      } else if (e.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+      } else {
+        return res.status(500).send({ message: "Error from deleteItem", e });
+      }
     });
 };
 
@@ -71,15 +82,16 @@ const likeItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send(item))
     .catch((e) => {
-      console.error("Error:", e);
+      console.error(e);
       if (e.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
       } else if (e.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+      } else {
+        return res
+          .status(INTERNAL_SERVER_ERROR_STATUS)
+          .send({ message: e.message });
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: e.message });
     });
 };
 
@@ -92,15 +104,16 @@ const disLikeItem = (req, res) => {
     .orFail()
     .then(() => res.status(200).send({ message: e.message }))
     .catch((e) => {
-      console.error("Error:", e);
+      console.error(e);
       if (e.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
       } else if (e.name === "DocumentNotFoundError") {
         res.status(NOT_FOUND_STATUS).send({ message: e.message });
+      } else {
+        return res
+          .status(INTERNAL_SERVER_ERROR_STATUS)
+          .send({ message: e.message });
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: e.message });
     });
 };
 
