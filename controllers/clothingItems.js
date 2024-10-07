@@ -17,6 +17,10 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
+      console.error(e);
+      if (e.name === "ValidationError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+      }
       res
         .status(INTERNAL_SERVER_ERROR_STATUS)
         .send({ message: "Error from createItem", e });
