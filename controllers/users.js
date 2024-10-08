@@ -43,8 +43,8 @@ const getUser = (req, res) => {
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      } else
-        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      }
+      return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
     });
 };
 
