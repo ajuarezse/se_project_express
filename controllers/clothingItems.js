@@ -1,4 +1,3 @@
-//const e = require("express");
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS,
@@ -44,7 +43,8 @@ const updateItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       }
       return res.status(500).send({ message: "Error from updateItem", err });
@@ -62,7 +62,8 @@ const deleteItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       }
       return res.status(500).send({ message: "Error from deleteItem", err });
@@ -81,7 +82,8 @@ const likeItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       }
       return res
@@ -102,7 +104,8 @@ const disLikeItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       }
       return res
