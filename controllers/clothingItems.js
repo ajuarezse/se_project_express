@@ -1,4 +1,3 @@
-//const { get } = require("mongoose");
 const e = require("express");
 const ClothingItem = require("../models/clothingItem");
 const {
@@ -14,14 +13,14 @@ const createItem = (req, res) => {
     .then((item) => {
       res.send({ data: item });
     })
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_STATUS)
-          .send({ message: "Error from createItem", e });
+          .send({ message: "Error from createItem", err });
       }
     });
 };
@@ -29,9 +28,9 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((item) => res.status(200).send(item))
-    .catch((e) => {
-      console.error(e);
-      res.status(500).send({ message: "Error from getItems", e });
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send({ message: "Error from getItems", err });
     });
 };
 
@@ -42,14 +41,14 @@ const updateItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
-      } else if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      } else if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       } else {
-        res.status(500).send({ message: "Error from updateItem", e });
+        res.status(500).send({ message: "Error from updateItem", err });
       }
     });
 };
@@ -61,14 +60,14 @@ const deleteItem = (req, res) => {
     .orFail()
     .then(() => ClothingItem.deleteOne({ _id: itemId }))
     .then(() => res.status(200).send({ message: "Item deleted successfully" }))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
-      } else if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      } else if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       } else {
-        return res.status(500).send({ message: "Error from deleteItem", e });
+        return res.status(500).send({ message: "Error from deleteItem", err });
       }
     });
 };
@@ -81,16 +80,16 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((item) => res.status(200).send(item))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
-      } else if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_STATUS).send({ message: e.message });
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      } else if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       } else {
         return res
           .status(INTERNAL_SERVER_ERROR_STATUS)
-          .send({ message: e.message });
+          .send({ message: err.message });
       }
     });
 };
@@ -102,17 +101,17 @@ const disLikeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then(() => res.status(200).send({ message: e.message }))
-    .catch((e) => {
-      console.error(e);
-      if (e.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: e.message });
-      } else if (e.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND_STATUS).send({ message: e.message });
+    .then(() => res.status(200).send({ message: err.message }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      } else if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND_STATUS).send({ message: err.message });
       } else {
         return res
           .status(INTERNAL_SERVER_ERROR_STATUS)
-          .send({ message: e.message });
+          .send({ message: err.message });
       }
     });
 };
