@@ -40,7 +40,6 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => ClothingItem.deleteOne({ _id: itemId }))
     .then(() => res.status(200).send({ message: "Item deleted successfully" }))
     .catch((err) => {
       console.error(err);
@@ -50,7 +49,9 @@ const deleteItem = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
       }
-      return res.status(500).send({ message: "Error from deleteItem", err });
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -72,7 +73,7 @@ const likeItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: err.message });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -94,7 +95,7 @@ const disLikeItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: err.message });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
