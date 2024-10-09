@@ -12,7 +12,7 @@ const getUsers = (req, res) => {
       console.error(err);
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: err.message });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -27,7 +27,7 @@ const createUser = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: err.message });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -44,7 +44,9 @@ const getUser = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
       }
-      return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
