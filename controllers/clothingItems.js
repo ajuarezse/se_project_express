@@ -20,7 +20,7 @@ const createItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "Error from createItem", err });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -29,7 +29,9 @@ const getItems = (req, res) => {
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       console.error(err);
-      res.status(500).send({ message: "Error from getItems", err });
+      res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
