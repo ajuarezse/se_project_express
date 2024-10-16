@@ -25,7 +25,7 @@ const createUser = (req, res) => {
     if (user) {
       return res
         .status(DUPLICATION_ERROR_STATUS)
-        .send({ message: err.message });
+        .send({ message: "Duplication Error" });
     }
     return bcrypt
       .hash(password, 10)
