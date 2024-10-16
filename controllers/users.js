@@ -3,6 +3,7 @@ const {
   BAD_REQUEST_STATUS,
   NOT_FOUND_STATUS,
   INTERNAL_SERVER_ERROR_STATUS,
+  DUPLICATION_ERROR_STATUS,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -17,8 +18,17 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-  User.create({ name, avatar })
+  const { name, avatar, email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        return res
+          .status(DUPLICATION_ERROR_STATUS)
+          .send({ message: err.message });
+      }
+      return User.create({ name, avatar, email, password });
+    })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
