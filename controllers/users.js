@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 const {
   BAD_REQUEST_STATUS,
   NOT_FOUND_STATUS,
@@ -20,25 +21,26 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        return res
-          .status(DUPLICATION_ERROR_STATUS)
-          .send({ message: err.message });
-      }
-      return User.create({ name, avatar, email, password });
-    })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      }
+  User.findOne({ email }).then((user) => {
+    if (user) {
       return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "An error has occurred on the server" });
-    });
+        .status(DUPLICATION_ERROR_STATUS)
+        .send({ message: err.message });
+    }
+    return bcrypt
+      .hash(password, 10)
+      .then((hash) => User.create({ name, avatar, email, password: hash }))
+      .then((user) => res.status(201).send(user))
+      .catch((err) => {
+        console.error(err);
+        if (err.name === "ValidationError") {
+          return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+        }
+        return res
+          .status(INTERNAL_SERVER_ERROR_STATUS)
+          .send({ message: "An error has occurred on the server" });
+      });
+  });
 };
 
 const getUser = (req, res) => {
