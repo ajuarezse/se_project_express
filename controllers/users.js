@@ -77,4 +77,8 @@ const getUser = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+};
+
 module.exports = { getUsers, createUser, getUser };
