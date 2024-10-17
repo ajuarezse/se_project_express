@@ -30,7 +30,16 @@ const createUser = (req, res) => {
     return bcrypt
       .hash(password, 10)
       .then((hash) => User.create({ name, avatar, email, password: hash }))
-      .then((user) => res.status(201).send(user))
+      .then((user) => {
+        const userObject = {
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          _id: user._id,
+          __v: user.__v,
+        };
+        return res.status(201).send(userObject);
+      })
       .catch((err) => {
         console.error(err);
         if (err.name === "ValidationError") {
