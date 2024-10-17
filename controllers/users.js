@@ -21,7 +21,13 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  User.findOne({ email }).then((user) => {
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_STATUS)
+      .send({ message: "Email and password are required" });
+  }
+
+  return User.findOne({ email }).then((user) => {
     if (user) {
       return res
         .status(DUPLICATION_ERROR_STATUS)
