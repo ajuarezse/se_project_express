@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {
   BAD_REQUEST_STATUS,
+  AUTHENTICATION_ERROR,
   NOT_FOUND_STATUS,
   INTERNAL_SERVER_ERROR_STATUS,
   DUPLICATION_ERROR_STATUS,
@@ -88,7 +89,9 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res
+        .status(AUTHENTICATION_ERROR)
+        .send({ message: "Incorrect email or password" });
     });
 };
 
