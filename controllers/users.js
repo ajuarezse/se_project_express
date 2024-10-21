@@ -108,7 +108,20 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_STATUS).send({ message: err.message });
+      }
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
     });
+};
+
+const updateUser = (req, res) => {
+  User.findByIdAndUpdate();
 };
 
 module.exports = { getUsers, createUser, getUser, login, getCurrentUser };
