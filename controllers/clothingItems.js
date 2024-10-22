@@ -2,6 +2,7 @@ const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS,
   NOT_FOUND_STATUS,
+  FORBIDDEN_ERROR_STATUS,
   INTERNAL_SERVER_ERROR_STATUS,
 } = require("../utils/errors");
 
@@ -38,9 +39,18 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res
+          .status(FORBIDDEN_ERROR_STATUS)
+          .send({ message: "You do not have permission to delete this item." });
+      }
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.status(200).send({ message: "Item deleted successfully" })
+      );
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
