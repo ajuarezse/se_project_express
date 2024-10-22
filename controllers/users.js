@@ -9,7 +9,7 @@ const {
   INTERNAL_SERVER_ERROR_STATUS,
   DUPLICATION_ERROR_STATUS,
 } = require("../utils/errors");
-
+/*
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
@@ -20,7 +20,7 @@ const getUsers = (req, res) => {
         .send({ message: "An error has occurred on the server" });
     });
 };
-
+*/
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -51,7 +51,7 @@ const createUser = (req, res) => {
       });
   });
 };
-
+/*
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
@@ -70,7 +70,7 @@ const getUser = (req, res) => {
         .send({ message: "An error has occurred on the server" });
     });
 };
-
+*/
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -136,9 +136,9 @@ const updateUser = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
+  // getUsers,
   createUser,
-  getUser,
+  // getUser,
   login,
   getCurrentUser,
   updateUser,
