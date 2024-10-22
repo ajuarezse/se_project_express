@@ -19,26 +19,27 @@ const createUser = (req, res) => {
       .send({ message: "Email and password are required" });
   }
 
-  return User.findOne({ email }).then((user) => {
-    if (user) {
-      return res
-        .status(DUPLICATION_ERROR_STATUS)
-        .send({ message: "Duplication Error" });
-    }
-    return bcrypt
-      .hash(password, 10)
-      .then((hash) => User.create({ name, avatar, email, password: hash }))
-      .then(() => res.status(201).send({ name, avatar, email }))
-      .catch((err) => {
-        console.error(err);
-        if (err.name === "ValidationError") {
-          return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-        }
+  return User.findOne({ email })
+    .then((user) => {
+      if (user) {
         return res
-          .status(INTERNAL_SERVER_ERROR_STATUS)
-          .send({ message: "An error has occurred on the server" });
-      });
-  });
+          .status(DUPLICATION_ERROR_STATUS)
+          .send({ message: "Duplication Error" });
+      }
+      return bcrypt
+        .hash(password, 10)
+        .then((hash) => User.create({ name, avatar, email, password: hash }))
+        .then(() => res.status(201).send({ name, avatar, email }));
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
+    });
 };
 
 const login = (req, res) => {
@@ -56,10 +57,16 @@ const login = (req, res) => {
       });
       return res.status(200).send({ token });
     })
-    .catch(() => {
-      res
-        .status(AUTHENTICATION_ERROR)
-        .send({ message: "Incorrect email or password" });
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(AUTHENTICATION_ERROR)
+          .send({ message: "Incorrect email or password" });
+      }
+      console.error(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -92,9 +99,7 @@ const updateUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res
-          .status(AUTHENTICATION_ERROR)
-          .send({ message: "Invalid data" });
+        return res.status(BAD_REQUEST_STATUS).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_STATUS).send({ message: err.message });
