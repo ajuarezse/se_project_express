@@ -9,18 +9,7 @@ const {
   INTERNAL_SERVER_ERROR_STATUS,
   DUPLICATION_ERROR_STATUS,
 } = require("../utils/errors");
-/*
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
-*/
+
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -51,26 +40,7 @@ const createUser = (req, res) => {
       });
   });
 };
-/*
-const getUser = (req, res) => {
-  const { userId } = req.params;
-  User.findById(userId)
-    .orFail()
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_STATUS).send({ message: err.message });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
-*/
+
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -136,9 +106,7 @@ const updateUser = (req, res) => {
 };
 
 module.exports = {
-  // getUsers,
   createUser,
-  // getUser,
   login,
   getCurrentUser,
   updateUser,
