@@ -1,4 +1,3 @@
-//const { NotBeforeError } = require("jsonwebtoken");
 const ClothingItem = require("../models/clothingItem");
 const {
   BadRequestError,
@@ -11,14 +10,13 @@ const createItem = (req, res, next) => {
   const owner = req.user._id;
 
   ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => {
-      res.status(200).send({ data: item });
-    })
+    .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        err.statusCode = BAD_REQUEST_STATUS;
+        next(new BadRequestError("Invalid data for creating an item"));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -32,27 +30,24 @@ const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
-    .orFail()
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    })
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        const error = new Error(
-          "You do not have permission to delete this item."
+        throw new ForbiddenError(
+          "You do not have permission to delete this item"
         );
-        error.statusCode = FORBIDDEN_ERROR_STATUS;
-        throw error;
       }
-      return ClothingItem.findByIdAndDelete(itemId).then(() =>
-        res.status(200).send({ message: "Item deleted successfully" })
-      );
+      return ClothingItem.findByIdAndDelete(itemId);
     })
+    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST_STATUS;
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        err.statusCode = NOT_FOUND_STATUS;
-      }
-      next(err);
     });
 };
 
@@ -62,16 +57,16 @@ const likeItem = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST_STATUS;
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        err.statusCode = NOT_FOUND_STATUS;
-      }
-      next(err);
     });
 };
 
@@ -81,16 +76,16 @@ const disLikeItem = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
-    .then(() => res.status(200).send({ message: "unlike successful" }))
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
+    })
+    .then(() => res.status(200).send({ message: "Item unliked successfully" }))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST_STATUS;
+        next(new BadRequestError("Invalid item ID format"));
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        err.statusCode = NOT_FOUND_STATUS;
-      }
-      next(err);
     });
 };
 
