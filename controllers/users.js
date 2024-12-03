@@ -10,35 +10,37 @@ const {
   DUPLICATION_ERROR_STATUS,
 } = require("../utils/errors");
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST_STATUS)
-      .send({ message: "Email and password are required" });
+    const error = new Error("Email and password are required");
+    err.statusCode = BAD_REQUEST_STATUS;
+    throw error;
   }
 
-  return User.findOne({ email })
+  User.findOne({ email })
     .then((user) => {
       if (user) {
-        return res
-          .status(DUPLICATION_ERROR_STATUS)
-          .send({ message: "Duplication Error" });
+        const error = new Error("Email already in use");
+        err.statusCode = DUPLICATION_ERROR_STATUS;
+        throw error;
       }
-      return bcrypt
-        .hash(password, 10)
-        .then((hash) => User.create({ name, avatar, email, password: hash }))
-        .then(() => res.status(201).send({ name, avatar, email }));
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((newUser) => {
+      res.status(201).send({
+        name: newUser.name,
+        avatar: newUser.avatar,
+        email: newUser.email,
+      });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS).send({ message: err.message });
+        err.statusCode = BAD_REQUEST_STATUS;
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS)
-        .send({ message: "An error has occurred on the server" });
+      next(err);
     });
 };
 
