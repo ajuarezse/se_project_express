@@ -1,9 +1,9 @@
 //const { NotBeforeError } = require("jsonwebtoken");
 const ClothingItem = require("../models/clothingItem");
 const {
-  BAD_REQUEST_STATUS,
-  NOT_FOUND_STATUS,
-  FORBIDDEN_ERROR_STATUS,
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
 } = require("../utils/errors");
 
 const createItem = (req, res, next) => {

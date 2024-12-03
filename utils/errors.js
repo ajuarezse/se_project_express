@@ -1,15 +1,42 @@
-const BAD_REQUEST_STATUS = 400;
-const AUTHENTICATION_ERROR = 401;
-const FORBIDDEN_ERROR_STATUS = 403;
-const NOT_FOUND_STATUS = 404;
-const INTERNAL_SERVER_ERROR_STATUS = 500;
-const DUPLICATION_ERROR_STATUS = 409;
+class BadRequestError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 400;
+  }
+}
+
+class UnauthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+}
+
+class ForbiddenError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 404;
+  }
+}
+
+class ConflictError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 409;
+  }
+}
 
 module.exports = {
-  BAD_REQUEST_STATUS,
-  AUTHENTICATION_ERROR,
-  FORBIDDEN_ERROR_STATUS,
-  NOT_FOUND_STATUS,
-  INTERNAL_SERVER_ERROR_STATUS,
-  DUPLICATION_ERROR_STATUS,
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
 };
