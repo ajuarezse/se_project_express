@@ -16,7 +16,7 @@ const createUser = (req, res, next) => {
   if (!email || !password) {
     const error = new Error("Email and password are required");
     error.statusCode = BAD_REQUEST_STATUS;
-    throw error;
+    return next(error);
   }
 
   User.findOne({ email })
@@ -24,7 +24,7 @@ const createUser = (req, res, next) => {
       if (user) {
         const error = new Error("Email already in use");
         error.statusCode = DUPLICATION_ERROR_STATUS;
-        throw error;
+        return next(error);
       }
       return bcrypt.hash(password, 10);
     })
@@ -86,6 +86,12 @@ const getCurrentUser = (req, res, next) => {
 
 const updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
+
+  if (!name || !avatar) {
+    const error = new Error("Name and avatar are required");
+    error.statusCode = BAD_REQUEST_STATUS;
+    return next(error);
+  }
 
   User.findByIdAndUpdate(
     req.user._id,
