@@ -1,12 +1,11 @@
 const winston = require("winston");
 const expressWinston = require("express-winston");
-const errorHandler = require("./error-handler");
 
 const messageFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.printf(
     ({ level, message, meta, timestamp }) =>
-      `${timestamp} ${level}: ${meta.error?.stack || message}`
+      `${timestamp} ${level}: ${meta?.error?.stack || message}`
   )
 );
 
@@ -20,12 +19,12 @@ const requestLogger = expressWinston.logger({
       format: winston.format.json(),
     }),
   ],
-}):
+});
 
 const errorLogger = expressWinston.errorLogger({
   transports: [
     new winston.transports.File({
-      filename: 'error.log'
+      filename: "error.log",
     }),
   ],
   format: winston.format.json(),
