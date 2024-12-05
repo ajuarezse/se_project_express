@@ -1,16 +1,13 @@
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
 
-// Custom validation function for URLs
 const validateUrl = (value, helpers) => {
   if (!validator.isURL(value, { require_protocol: true })) {
-    // Ensures strict URL validation
     return helpers.message("The field must be a valid URL");
   }
   return value;
 };
 
-// 1. Validation for creating a clothing item
 const validateClothingItem = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({
@@ -29,7 +26,6 @@ const validateClothingItem = celebrate({
   }),
 });
 
-// 2. Validation for creating a user
 const validateUserCreation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).optional().messages({
@@ -50,7 +46,6 @@ const validateUserCreation = celebrate({
   }),
 });
 
-// 3. Validation for user login
 const validateUserLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required().messages({
@@ -63,7 +58,6 @@ const validateUserLogin = celebrate({
   }),
 });
 
-// 4. Validation for IDs (user and clothing item IDs)
 const validateId = celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24).required().messages({
