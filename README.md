@@ -16,13 +16,13 @@ By integrating with a weather API, the backend fetches up-to-date weather inform
 
 - 🧪 **Testing**: Ensures code quality and reliability through automated testing.
 
-- 📝**Request and Error Logging**: Middleware for logging requests and errors to enhance debugging and monitoring.
+- 📝 **Request and Error Logging**: Middleware for logging requests and errors to enhance debugging and monitoring.
 
-- 🔐**Secure Hosting**: Hosted on Google Cloud Services with HTTPS and SSL encryption for safe data transmission.
+- 🔐 **Secure Hosting**: Hosted on Google Cloud Services with HTTPS and SSL encryption for safe data transmission.
 
-- ⚡**High Availablity**: Utilized PM2 and NGINX for smooth and continuous site operation.
+- ⚡ **High Availablity**: Utilized PM2 and NGINX for smooth and continuous site operation.
 
-- 🧪**Automated Tests**: Added tests to ensure reliable functionality and validate key features.
+- 🧪 **Automated Tests**: Added tests to ensure reliable functionality and validate key features.
 
 # Technologies Used:
 
