@@ -30,6 +30,16 @@ By integrating with a weather API, the backend fetches up-to-date weather inform
 
 - 💻 **JavaScript (ES6+)**: Core language used in the project.
 
----
+## Production Domain
 
-I plan on next implementing user authentication and authorization security features to allow for secure user creation and logins.
+The production server is accessible at:
+
+**`https://api.wtwr.ftp.sh`**
+
+## Running the Project
+
+`npm run start` — to launch the server
+
+`npm run dev` — to launch the server with the hot reload feature
+
+---
