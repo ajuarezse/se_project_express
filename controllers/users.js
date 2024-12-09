@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 const {
-  BadRequestError,
   UnauthorizedError,
   NotFoundError,
   ConflictError,
 } = require("../utils/errors");
+const BadRequestError = require("../utils/BadRequestError");
 
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
