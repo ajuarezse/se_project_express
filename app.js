@@ -21,8 +21,8 @@ mongoose
 app.use(express.json());
 app.use(cors());
 app.use(requestLogger);
-//app.use(limiter);
-//app.use(helmet());
+app.use(limiter);
+app.use(helmet());
 
 app.get("/crash-test", () => {
   setTimeout(() => {
