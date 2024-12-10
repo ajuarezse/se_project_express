@@ -2,9 +2,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const { NotFoundError, ConflictError } = require("../utils/errors");
+const { ConflictError } = require("../utils/errors");
 const BadRequestError = require("../utils/BadRequestError");
 const UnauthorizedError = require("../utils/UnauthorizedError");
+const NotFoundError = require("../utils/NotFoundError");
 
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
