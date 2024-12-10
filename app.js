@@ -1,11 +1,13 @@
+require("dotenv").config();
+
 const express = require("express");
+const limiter = require("./middlewares/rateLimiter");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
 const mainRouter = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-require("dotenv").config();
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -18,6 +20,7 @@ mongoose
 app.use(express.json());
 app.use(cors());
 app.use(requestLogger);
+app.use(limiter);
 
 app.get("/crash-test", () => {
   setTimeout(() => {
