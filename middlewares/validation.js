@@ -61,10 +61,17 @@ const validateUserLogin = celebrate({
 const validateId = celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24).required().messages({
-      "string.length": 'The "id" field must be 24 characters long',
-      "string.hex": 'The "id" field must be a valid hexadecimal value',
-      "string.empty": 'The "id" field must be filled in',
+      "string.length": 'The "itemId" field must be 24 characters long',
+      "string.hex": 'The "itemId" field must be a valid hexadecimal value',
+      "string.empty": 'The "itemId" field must be filled in',
     }),
+  }),
+});
+
+const validateUserUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).optional(),
+    avatar: Joi.string().custom(validateUrl).optional(),
   }),
 });
 
@@ -73,4 +80,5 @@ module.exports = {
   validateUserCreation,
   validateUserLogin,
   validateId,
+  validateUserUpdate,
 };
