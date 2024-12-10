@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const helmet = require("helmet");
 const limiter = require("./middlewares/rateLimiter");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(cors());
 app.use(requestLogger);
 app.use(limiter);
+app.use(helmet());
 
 app.get("/crash-test", () => {
   setTimeout(() => {
