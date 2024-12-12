@@ -1,6 +1,6 @@
 # WTWR (What to Wear?): Back End
 
-This is the back-end portion of the WTWR project, a comprehensive application designed to assist users in selecting suitable attire based on real-time weather conditions. Now running on Google cloud services, it serves as the foundation for the application, handling data storage, retrieval, and processing. It leverages robust technologies to ensure efficient and reliable performance.
+This is the back-end portion of the WTWR project, a comprehensive application designed to assist users in selecting suitable attire based on real-time weather conditions. Now running on Google cloud services, this back-end serves as the foundation for the application, handling data storage, retrieval, and processing. It leverages robust technologies to ensure efficient and reliable performance.
 
 By integrating with a weather API, the backend fetches up-to-date weather information and uses it to recommend appropriate clothing options. It also provides features for user management, clothing item management, and a liking system, enhancing the overall user experience.
 
