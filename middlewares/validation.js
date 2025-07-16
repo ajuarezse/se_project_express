@@ -52,38 +52,37 @@ const validateUserLogin = celebrate({
   }),
 });
 
-const validateId = celebrate({
-  params: Joi.object().keys({
-    itemId: Joi.string()
-      .required()
-      .regex(/^[0-9a-fA-F]{24}$/)
-      .messages({
-        "string.pattern.base":
-          'The "itemId" must be a valid MongoDB ObjectId (24 hex characters)',
-        "string.empty": 'The "itemId" field must be filled in',
-        "any.required": 'The "itemId" field is required',
-      }),
-  }),
+// Using just one validation middleware for item IDs
+const validateItemId = celebrate({
+  params: Joi.object()
+    .keys({
+      itemId: Joi.string()
+        .required()
+        .regex(/^[0-9a-fA-F]{24}$/)
+        .messages({
+          "string.pattern.base":
+            'The "itemId" must be a valid MongoDB ObjectId (24 hex characters)',
+          "string.empty": 'The "itemId" field must be filled in',
+          "any.required": 'The "itemId" field is required',
+        })
+        .custom((value, helpers) => {
+          console.log("Validating itemId:", value);
+          if (!value.match(/^[0-9a-fA-F]{24}$/)) {
+            throw new Error("Invalid item ID format");
+          }
+          return value;
+        }),
+    })
+    .unknown(true),
 });
+
+// Use validateItemId instead of validateId for consistency
+const validateId = validateItemId;
 
 const validateUserUpdate = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).optional(),
     avatar: Joi.string().custom(validateUrl).optional(),
-  }),
-});
-
-const validateItemId = celebrate({
-  params: Joi.object().keys({
-    itemId: Joi.string()
-      .required()
-      .regex(/^[0-9a-fA-F]{24}$/)
-      .messages({
-        "string.pattern.base":
-          'The "itemId" must be a valid MongoDB ObjectId (24 hex characters)',
-        "string.empty": 'The "itemId" field must be filled in',
-        "any.required": 'The "itemId" field is required',
-      }),
   }),
 });
 

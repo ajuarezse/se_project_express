@@ -2,7 +2,6 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 const {
   validateClothingItem,
-  validateId,
   validateItemId,
 } = require("../middlewares/validation");
 const {
@@ -13,10 +12,12 @@ const {
   disLikeItem,
 } = require("../controllers/clothingItems");
 
+// Public route
 router.get("/", getItems);
 
+// Protected routes with consistent validation
 router.post("/", auth, validateClothingItem, createItem);
-router.delete("/:itemId", auth, validateId, deleteItem);
+router.delete("/:itemId", auth, validateItemId, deleteItem);
 router.put("/:itemId/likes", auth, validateItemId, likeItem);
 router.delete("/:itemId/likes", auth, validateItemId, disLikeItem);
 

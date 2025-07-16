@@ -13,25 +13,44 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const app = express();
 const { PORT = 3001 } = process.env;
 
+// Debug logs for MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log("Connected to MongoDB successfully");
+    console.log("MongoDB URI:", process.env.MONGODB_URI?.split("@")[1]); // Log only the host part for security
   })
   .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
+    console.error("MongoDB connection error:", error);
     process.exit(1);
   });
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log("Request headers:", req.headers);
+  console.log("Request body:", req.body);
+  next();
+});
+
+// Detailed request logging
+app.use((req, res, next) => {
+  console.log("Request headers:", req.headers);
+  console.log("Request path:", req.path);
+  console.log("Request method:", req.method);
+  next();
+});
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:3000", "https://wtwr.jumpingcrab.com"],
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -44,9 +63,36 @@ app.use(limiter);
 // Logging middleware
 app.use(requestLogger);
 
-// Health check endpoint
+// Health check endpoint with environment info
 app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "WTWR API is running" });
+  res.json({
+    status: "ok",
+    message: "WTWR API is running",
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// MongoDB connection test endpoint
+app.get("/api/test-db", async (req, res) => {
+  try {
+    // Test the database connection
+    await mongoose.connection.db.admin().ping();
+    res.json({
+      status: "success",
+      message: "MongoDB connection successful",
+      dbName: mongoose.connection.db.databaseName,
+      state: mongoose.connection.readyState, // 1 = connected
+    });
+  } catch (err) {
+    console.error("Database connection test failed:", err);
+    res.status(500).json({
+      status: "error",
+      message: "MongoDB connection failed",
+      error: err.message,
+      state: mongoose.connection.readyState, // 0 = disconnected
+    });
+  }
 });
 
 // Debug endpoint (remove in production)
@@ -73,4 +119,5 @@ process.on("unhandledRejection", (err) => {
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log("Environment:", process.env.NODE_ENV);
 });
