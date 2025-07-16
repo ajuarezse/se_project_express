@@ -13,6 +13,9 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const app = express();
 const { PORT = 3001 } = process.env;
 
+// Trust proxy - required for Vercel deployment
+app.set("trust proxy", 1);
+
 // Debug logs for MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -28,30 +31,17 @@ mongoose
     process.exit(1);
   });
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  console.log("Request headers:", req.headers);
-  console.log("Request body:", req.body);
-  next();
-});
-
-// Detailed request logging
-app.use((req, res, next) => {
-  console.log("Request headers:", req.headers);
-  console.log("Request path:", req.path);
-  console.log("Request method:", req.method);
-  next();
-});
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+
+// Configure CORS
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://wtwr.jumpingcrab.com"],
+    origin: ["http://localhost:3000", "https://wtwr.vercel.app"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );

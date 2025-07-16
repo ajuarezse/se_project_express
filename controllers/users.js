@@ -10,12 +10,21 @@ const ConflictError = require("../utils/ConflictError");
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
+  console.log("Received signup request with data:", {
+    name,
+    email,
+    hasPassword: !!password,
+    avatar: avatar || "default will be used",
+  });
+
   if (!email || !password) {
+    console.log("Validation failed: missing email or password");
     return next(new BadRequestError("Email and password are required"));
   }
 
   // Validate password length
   if (password.length < 8) {
+    console.log("Validation failed: password too short");
     return next(
       new BadRequestError("Password must be at least 8 characters long")
     );
@@ -24,6 +33,7 @@ module.exports.createUser = (req, res, next) => {
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
+    console.log("Validation failed: invalid email format");
     return next(new BadRequestError("Invalid email format"));
   }
 
@@ -34,17 +44,14 @@ module.exports.createUser = (req, res, next) => {
   return User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
+        console.log("User creation failed: email already exists");
         throw new ConflictError("Email already in use");
       }
+      console.log("No existing user found, proceeding with password hash");
       return bcrypt.hash(password, 10);
     })
     .then((hash) => {
-      console.log("Creating user with data:", {
-        name,
-        email,
-        avatar: avatar || defaultAvatar,
-      });
-
+      console.log("Creating user in database...");
       return User.create({
         name: name || undefined,
         avatar: avatar || defaultAvatar,
@@ -52,29 +59,21 @@ module.exports.createUser = (req, res, next) => {
         password: hash,
       });
     })
-    .then((newUser) => {
-      console.log("User created successfully:", {
-        _id: newUser._id,
-        email: newUser.email,
-        name: newUser.name,
-      });
-
-      res.status(201).send({
-        _id: newUser._id,
-        name: newUser.name,
-        avatar: newUser.avatar,
-        email: newUser.email,
-      });
+    .then((user) => {
+      console.log("User created successfully:", user._id);
+      const userResponse = user.toObject();
+      delete userResponse.password;
+      res.status(201).send(userResponse);
     })
     .catch((err) => {
-      console.error("Error creating user:", err);
+      console.error("Error in createUser:", err);
       if (err.name === "ValidationError") {
-        return next(new BadRequestError(`Invalid user data: ${err.message}`));
+        next(new BadRequestError("Invalid data provided"));
+      } else if (err.code === 11000) {
+        next(new ConflictError("Email already exists"));
+      } else {
+        next(err);
       }
-      if (err.code === 11000) {
-        return next(new ConflictError("Email already exists"));
-      }
-      next(err);
     });
 };
 
