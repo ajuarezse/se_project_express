@@ -41,8 +41,10 @@ module.exports.createUser = (req, res, next) => {
   const defaultAvatar =
     "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr/avatar_0.jpg";
 
+  console.log("Attempting MongoDB operation...");
   return User.findOne({ email })
     .then((existingUser) => {
+      console.log("MongoDB findOne completed", { found: !!existingUser });
       if (existingUser) {
         console.log("User creation failed: email already exists");
         throw new ConflictError("Email already in use");

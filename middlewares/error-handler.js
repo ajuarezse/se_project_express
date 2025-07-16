@@ -1,5 +1,25 @@
 const errorHandler = (err, req, res, next) => {
-  console.error("Error:", err);
+  console.error("Error in error handler:", {
+    error: err,
+    stack: err.stack,
+    name: err.name,
+    code: err.code,
+    path: req.path,
+    method: req.method,
+    body: req.body,
+  });
+
+  // Handle MongoDB timeout errors
+  if (
+    err.name === "MongooseError" &&
+    err.message.includes("buffering timed out")
+  ) {
+    console.error("MongoDB operation timed out");
+    return res.status(500).send({
+      message: "Database operation timed out. Please try again.",
+      error: "MONGODB_TIMEOUT",
+    });
+  }
 
   // Handle validation errors from celebrate/joi
   if (err.joi) {
@@ -7,6 +27,7 @@ const errorHandler = (err, req, res, next) => {
     return res.status(400).send({
       message: "Validation error",
       details: err.joi.details.map((detail) => detail.message),
+      error: "VALIDATION_ERROR",
     });
   }
 
