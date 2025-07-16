@@ -14,9 +14,13 @@ const app = express();
 const { PORT = 3001 } = process.env;
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/wtwr_db")
-  .then(() => {})
-  .catch(console.error);
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 
 app.use(express.json());
 app.use(cors());
