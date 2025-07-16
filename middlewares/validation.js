@@ -32,9 +32,8 @@ const validateUserCreation = celebrate({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',
     }),
-    avatar: Joi.string().custom(validateUrl).required().messages({
-      "string.empty": 'The "avatar" field must be filled in',
-      "string.uri": 'The "avatar" field must be a valid URL',
+    avatar: Joi.string().custom(validateUrl).optional().allow(null, '').messages({
+      "string.uri": 'The "avatar" field must be a valid URL if provided',
     }),
     email: Joi.string().email().required().messages({
       "string.email": 'The "email" field must be a valid email address',
