@@ -50,13 +50,19 @@ const deleteItem = (req, res, next) => {
 };
 
 const likeItem = (req, res, next) => {
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findById(itemId)
     .orFail(() => {
       throw new NotFoundError("Item not found");
+    })
+    .then((item) => {
+      return ClothingItem.findByIdAndUpdate(
+        itemId,
+        { $addToSet: { likes: userId } },
+        { new: true }
+      );
     })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
@@ -69,15 +75,21 @@ const likeItem = (req, res, next) => {
 };
 
 const disLikeItem = (req, res, next) => {
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  )
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findById(itemId)
     .orFail(() => {
       throw new NotFoundError("Item not found");
     })
-    .then(() => res.status(200).send({ message: "Item unliked successfully" }))
+    .then((item) => {
+      return ClothingItem.findByIdAndUpdate(
+        itemId,
+        { $pull: { likes: userId } },
+        { new: true }
+      );
+    })
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid item ID format"));

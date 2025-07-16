@@ -5,13 +5,15 @@ const bcrypt = require("bcryptjs");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
     minlength: 2,
     maxlength: 30,
   },
   avatar: {
     type: String,
-    required: [true, "The avatar field is required"],
+    required: false,
+    default:
+      "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr/avatar_0.jpg",
     validate: {
       validator(value) {
         return validator.isURL(value);
@@ -34,6 +36,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+    minlength: 8,
   },
 });
 

@@ -14,26 +14,67 @@ module.exports.createUser = (req, res, next) => {
     return next(new BadRequestError("Email and password are required"));
   }
 
+  // Validate password length
+  if (password.length < 8) {
+    return next(
+      new BadRequestError("Password must be at least 8 characters long")
+    );
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return next(new BadRequestError("Invalid email format"));
+  }
+
+  // Set default avatar if none provided
+  const defaultAvatar =
+    "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr/avatar_0.jpg";
+
   return User.findOne({ email })
-    .then((user) => {
-      if (user) {
+    .then((existingUser) => {
+      if (existingUser) {
         throw new ConflictError("Email already in use");
       }
       return bcrypt.hash(password, 10);
     })
-    .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((newUser) =>
+    .then((hash) => {
+      console.log("Creating user with data:", {
+        name,
+        email,
+        avatar: avatar || defaultAvatar,
+      });
+
+      return User.create({
+        name: name || undefined,
+        avatar: avatar || defaultAvatar,
+        email,
+        password: hash,
+      });
+    })
+    .then((newUser) => {
+      console.log("User created successfully:", {
+        _id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+      });
+
       res.status(201).send({
+        _id: newUser._id,
         name: newUser.name,
         avatar: newUser.avatar,
         email: newUser.email,
-      })
-    )
+      });
+    })
     .catch((err) => {
+      console.error("Error creating user:", err);
       if (err.name === "ValidationError") {
-        return next(new BadRequestError("Invalid user data"));
+        return next(new BadRequestError(`Invalid user data: ${err.message}`));
       }
-      return next(err);
+      if (err.code === 11000) {
+        return next(new ConflictError("Email already exists"));
+      }
+      next(err);
     });
 };
 
