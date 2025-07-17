@@ -38,7 +38,12 @@ app.use(helmet());
 // Configure CORS
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://wtwr.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://wtwr.vercel.app",
+      "https://wtwr-react.vercel.app",
+      "https://wtwr-frontend.vercel.app"
+    ],
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
